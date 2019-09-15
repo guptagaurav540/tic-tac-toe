@@ -229,7 +229,7 @@ int main()
     int choice,gamecode;
     scanf("%d",&choice);
    // system("clear");
-    char *args[]={"./simple",NULL};
+    char *args[]={"./offline",NULL};
     for(int i=0;i<9;i++)
     {
        poisition[i]=' '; 
