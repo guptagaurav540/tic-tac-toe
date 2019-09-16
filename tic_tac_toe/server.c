@@ -5,7 +5,8 @@
 #include<stdlib.h>
 #include <unistd.h>
 #include<string.h>
-
+#include"conio.h"
+#include<time.h>
 int fd,portno;
 struct sockaddr_in srv;
 struct sockaddr_in cli,srv_addr;
@@ -123,9 +124,22 @@ void connect_client()
 void write_read(int choice)
 {
     char cc[9];
+    int j,k;
+    if(portno%2)
+    {
+        j=4;
+        k=5;
+    }
+    else
+    {
+        j=5;
+        k=4;
+    }
+    
     if(choice==1){
     for(int i=0;i<4;i++)
     {   
+		
         recv(newfd,&pos,2*sizeof(int),0);
         recv(newfd,&win,sizeof(int),0);
         poisition[pos[0]-1]='1';
@@ -135,27 +149,29 @@ void write_read(int choice)
         printf("---------------\n");
         printf(" %c | %c | %c \n",poisition[6],poisition[7],poisition[8]);
         printf("\nfriend's turn : %d\n",pos[0]);
+				
         if(win==1)
         {
             printf("Friend's win:\n");
             break;
         }
+		
         do
         {
             printf("Your turn:");
             scanf("%d",&pos[0]);
+			system("clear");
             if(poisition[pos[0]-1]!=' ')
             {   
                 printf("Invailid choice :\n");
             }
         }while(poisition[pos[0]-1]!=' ');
-        //win=check_win(poisition,'0');
-        poisition[pos[0]-1]='0';
+		system("clear");        
+		poisition[pos[0]-1]='0';
         cc[pos[0]-1]='0';
         win=check_win(cc,'0');
         send(newfd,&pos,2*sizeof(int),0);
         send(newfd,&win,sizeof(int),0);
-        
         printf(" %c | %c | %c \n",poisition[0],poisition[1],poisition[2]);
         printf("---------------\n");
         printf(" %c | %c | %c \n",poisition[3],poisition[4],poisition[5]);
@@ -166,7 +182,7 @@ void write_read(int choice)
             printf("You win \n");
             break;
         }
-        printf("win_id = %d\n",win);
+       
     }close(newfd);
     }
     else if(choice==2)
@@ -174,6 +190,7 @@ void write_read(int choice)
     {
         do
         {
+			
             printf("Your turn:");
             scanf("%d",&pos[0]);
             if(poisition[pos[0]-1]!=' ')
@@ -182,7 +199,8 @@ void write_read(int choice)
                 printf("Retry...\n");
             }
         }while(poisition[pos[0]-1]!=' ');
-        poisition[pos[0]-1]='1';
+        
+		poisition[pos[0]-1]='1';
         cc[pos[0]-1]='1';
         win=check_win(cc,'1');
         send(fd,&pos,2*sizeof(int),0);
@@ -197,6 +215,7 @@ void write_read(int choice)
             printf("You win ");
             break;
         }
+				system("clear");		
         recv(fd,&pos,2*sizeof(int),0);
         recv(fd,&win,sizeof(int),0);
         poisition[pos[0]-1]='0';
@@ -210,7 +229,7 @@ void write_read(int choice)
         {
             printf("Friend's win:");
             break;
-        }printf("win_id = %d\n",win);
+        }
     }
     close(fd);
 }
@@ -220,16 +239,16 @@ int main()
     system("clear");
     printf("Welcome :\n");
     printf("For start press any key :\n");
-   // system("pause");
-    //system("clear");
-    printf("1. Start game :\n");
-    printf("2. Join game :\n");
+    getch();
+    system("clear");
+    printf("1. Create room :\n");
+    printf("2. Join room :\n");
     printf("3. Offline mode :\n");
     printf("Enter your choice :\n");
     int choice,gamecode;
     scanf("%d",&choice);
-   // system("clear");
-    char *args[]={"./simple",NULL};
+    system("clear");
+    char *args[]={"./offline",NULL};
     for(int i=0;i<9;i++)
     {
        poisition[i]=' '; 
@@ -239,9 +258,11 @@ int main()
     {
         
         case 1:
-            printf("Enter game code >5000:");
-            scanf("%d",&gamecode);
-            portno=gamecode;
+            srand(time(0));
+            gamecode = (rand()%(9999 - 5000 + 1)) + 5000;
+            printf("Room code : %d\n",gamecode);
+            printf("Say your friend to enter the same Room-code for join :\n");
+            portno = gamecode;
             //working as a server 
             //system("clear");
             printf("Waiting for your Friend....\n");
@@ -249,7 +270,7 @@ int main()
             bind_server();
             listen_server();
             accept_server();
-         //   system("clear");
+            //system("clear");
             
             printf(" 1 | 2 | 3 \n");
             printf("---------------\n");
@@ -258,7 +279,7 @@ int main()
             printf(" 7 | 8 | 9 \n");
             write_read(choice);
         case 2:
-            printf("Enter game code >5000:");
+            printf("Enter Room code :");
             scanf("%d",&gamecode);
             create();
             //system("clear");
