@@ -48,7 +48,7 @@ int check_win(char cc[],char x)
     }
     else 
     {
-        return(0);
+        return(1);
     }
 
 }
